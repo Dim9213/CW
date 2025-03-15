@@ -1,0 +1,45 @@
+name: Build .NET Windows Desktop App
+
+on:
+  push:
+    branches:
+      - main  # Trigger build when pushing to the main branch
+  pull_request:
+    branches:
+      - main  # Trigger build when creating a pull request to the main branch
+
+jobs:
+  build:
+    runs-on: windows-latest  # Use the latest Windows runner for building
+
+    steps:
+      # Step 1: Check out the code
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Step 2: Set up .NET SDK (Specify the version you want, e.g., 6.0 or 5.0)
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '6.0.x'  # Replace with the version you need (e.g., 5.0, 6.0, etc.)
+
+      # Step 3: Restore dependencies
+      - name: Restore dependencies
+        run: dotnet restore
+
+      # Step 4: Build the application
+      - name: Build the application
+        run: dotnet build --configuration Release --no-restore
+
+      # Step 5: Run tests (optional but recommended)
+      - name: Run tests
+        run: dotnet test --configuration Release --no-build --verbosity normal
+
+      # Step 6: Publish the application (Optional)
+      # This step will generate the output of the build in a folder, ready for deployment.
+      - name: Publish the application
+        run: dotnet publish --configuration Release --output ./publish
+
+      # Optional: You can add deployment steps here to publish the app to a server or deploy to a store
+      # - name: Publish
+      #   run: dotnet publish -c Release -o ./publish

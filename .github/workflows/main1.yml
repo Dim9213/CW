@@ -1,0 +1,41 @@
+name: Build C# Application
+
+on:
+  push:
+    branches:
+      - main  # Trigger the workflow on push to the main branch
+  pull_request:
+    branches:
+      - main  # Trigger the workflow when a PR is made to the main branch
+
+jobs:
+  build:
+    runs-on: windows-latest  # Use Windows runner for .NET build
+
+    steps:
+      # Step 1: Checkout code from the repository
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Step 2: Set up .NET SDK (choose the appropriate version for your app)
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '6.0.x'  # Specify the version of .NET SDK, e.g., '5.0.x', '6.0.x'
+
+      # Step 3: Restore dependencies (NuGet packages)
+      - name: Restore dependencies
+        run: dotnet restore
+
+      # Step 4: Build the application
+      - name: Build the application
+        run: dotnet build --configuration Release --no-restore
+
+      # Step 5: Run tests (if any)
+      - name: Run tests
+        run: dotnet test --configuration Release --no-build --verbosity normal
+
+      # Step 6: Publish the application (optional)
+      # Optional: If you want to publish your app (e.g., for deployment or creating a distributable version)
+      - name: Publish the application
+        run: dotnet publish --configuration Release --output ./publish
